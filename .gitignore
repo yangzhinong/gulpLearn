@@ -20,3 +20,4 @@ bin
 /desktop.ini
 /temp
 node_modules
+/dist
