@@ -12,7 +12,24 @@ var tsProject = ts.createProject("tsconfig.json");
 
 var browserify = require("browserify");
 var source = require('vinyl-source-stream');
+var watchify = require("watchify");
 var tsify = require("tsify");
+var gutil = require("gulp-util");
+
+var watchedBrowserify = watchify(browserify({
+    basedir: '.',
+    debug: true,
+    entries: ['src/scripts/ts/main.ts'],
+    cache: {},
+    packageCache: {}
+}).plugin(tsify));
+
+function bundle() {
+    return watchedBrowserify
+        .bundle()
+        .pipe(source('bundle.js'))
+        .pipe(gulp.dest("dist"));
+}
 
 var paths = {
     styles: {
@@ -63,18 +80,23 @@ gulp.task('scripts', function () {
 
 });
 
-gulp.task('default', ['clean'], function () {
-    //gulp.run('scripts','styles');
-    gulp.run('copy-html');
-    return browserify({
-            basedir: '.',
-            debug: true,
-            entries: ['src/scripts/ts/main.ts'],
-            cache: {},
-            packageCache: {}
-        })
-        .plugin(tsify)
-        .bundle()
-        .pipe(source('bundle.js'))
-        .pipe(gulp.dest("dist"));
-});
+// gulp.task('default', ['clean','copy-html'], function () {
+//     //gulp.run('scripts','styles');
+//     // gulp.run('copy-html');
+//     // return browserify({
+//     //         basedir: '.',
+//     //         debug: true,
+//     //         entries: ['src/scripts/ts/main.ts'],
+//     //         cache: {},
+//     //         packageCache: {}
+//     //     })
+//     //     .plugin(tsify)
+//     //     .bundle()
+//     //     .pipe(source('bundle.js'))
+//     //     .pipe(gulp.dest("dist"));
+
+// });
+
+gulp.task('default',['copy-html'],bundle);
+watchedBrowserify.on("update",bundle);
+watchedBrowserify.on('log',gutil.log);
