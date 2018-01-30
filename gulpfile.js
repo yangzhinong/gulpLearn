@@ -5,6 +5,7 @@ var del = require('del');
 
 var rename = require('gulp-rename');
 var cleanCSS = require('gulp-clean-css');
+var uglify = require('gulp-uglify');
 
 var ts = require('gulp-typescript');
 
@@ -15,6 +16,8 @@ var source = require('vinyl-source-stream');
 var watchify = require("watchify");
 var tsify = require("tsify");
 var gutil = require("gulp-util");
+var sourcemaps = require('gulp-sourcemaps');
+var buffer = require('vinyl-buffer');
 
 var watchedBrowserify = watchify(browserify({
     basedir: '.',
@@ -28,6 +31,10 @@ function bundle() {
     return watchedBrowserify
         .bundle()
         .pipe(source('bundle.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps:true}))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest("dist"));
 }
 
