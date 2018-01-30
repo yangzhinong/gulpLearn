@@ -29,11 +29,16 @@ var watchedBrowserify = watchify(browserify({
 
 function bundle() {
     return watchedBrowserify
+        .transform('babelify', {
+            presets: ['es2015'],
+            extensions: ['.ts']
+        })
         .bundle()
         .pipe(source('bundle.js'))
         .pipe(buffer())
-        .pipe(sourcemaps.init({loadMaps:true}))
-        .pipe(uglify())
+        .pipe(sourcemaps.init({
+            loadMaps: true
+        }))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest("dist"));
 }
@@ -104,6 +109,6 @@ gulp.task('scripts', function () {
 
 // });
 
-gulp.task('default',['copy-html'],bundle);
-watchedBrowserify.on("update",bundle);
-watchedBrowserify.on('log',gutil.log);
+gulp.task('default', ['copy-html'], bundle);
+watchedBrowserify.on("update", bundle);
+watchedBrowserify.on('log', gutil.log);

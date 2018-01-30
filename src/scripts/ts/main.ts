@@ -9,3 +9,7 @@ function showHello(divName: string, name: string) {
 showHello("greeting", "TypeScript!");
 
 console.log('change!!');
+
+setTimeout(()=>{
+    console.log("hello");
+},200);
